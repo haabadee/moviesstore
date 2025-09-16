@@ -53,7 +53,23 @@ def purchase(request):
         item.price = movie.price
         item.order = order
         item.quantity = cart[str(movie.id)]
+        #Item.objects.create(order=order, movie=movie, quantity=quantity)
         item.save()
+
+        for movie_id, quantity in cart.items():  # ✅ unpack movie_id and quantity
+            movie = get_object_or_404(Movie, id=movie_id)
+            quantity = int(quantity)
+
+            # 👇 Check stock if amount_left is being tracked
+            if movie.amount_left is not None:
+                if movie.amount_left < quantity:
+                    return render(request, "cart/purchase.html", {
+                        "error": f"Not enough copies left."
+                    })
+                movie.amount_left -= quantity
+                movie.save()
+
+           #item.objects.create(order=order, movie=movie, quantity=quantity)
 
     request.session['cart'] = {}
     template_data = {}

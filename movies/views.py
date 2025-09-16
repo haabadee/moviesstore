@@ -8,6 +8,7 @@ def index(request):
         movies = Movie.objects.filter(name__icontains=search_term)
     else:
         movies = Movie.objects.all()
+        movies = [m for m in movies if m.is_available()]
 
     template_data = {}
     template_data['title'] = 'Movies'
